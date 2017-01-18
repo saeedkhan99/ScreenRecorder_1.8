@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <!--VIDEO CONFIGURATION-->
+    <PreferenceCategory android:title="@string/setting_video_configuration" android:key="@string/pref_video_config" android:order="0">
+        <com.ami.customui.ListPreferenceCustom android:title="@string/video_resolution_title" android:icon="@drawable/ic_hd_white_24dp" android:key="@string/pref_resolution" android:entries="@array/setting_resolution_entries"
+            android:defaultValue="1" android:entryValues="@array/setting_resolution_values">
+        </com.ami.customui.ListPreferenceCustom>
+        <com.ami.customui.ListPreferenceCustom android:title="@string/video_frame_rate_title" android:icon="@drawable/ic_frame_rate_white_24dp" android:key="@string/pref_frame_rate" android:entries="@array/setting_frame_rate_entries" android:defaultValue="4" android:entryValues="@array/setting_frame_rate_values">
+        </com.ami.customui.ListPreferenceCustom>
+        <com.ami.customui.ListPreferenceCustom android:title="@string/video_bit_rate_title" android:icon="@drawable/ic_high_quality_white_24dp" android:key="@string/pref_bit_rate" android:defaultValue="1" android:entries="@array/setting_bit_rate_entries" android:entryValues="@array/setting_bit_rate_values"></com.ami.customui.ListPreferenceCustom>
+        <com.ami.customui.ListPreferenceCustom android:title="@string/video_orientation_title" android:icon="@drawable/ic_screen_rotation_white_24dp" android:entries="@array/setting_orientation_entries" android:defaultValue="1" android:key="@string/pref_orientation" android:entryValues="@array/setting_orientation_values"></com.ami.customui.ListPreferenceCustom>
+    </PreferenceCategory>
+    <!--AUDIO CONFIGURATION-->
+    <PreferenceCategory android:title="@string/setting_audio_configuration" android:order="1" android:key="@string/pref_audio_config">
+        <SwitchPreference android:defaultValue="false" android:title="@string/audio_recorder_title" android:summary="@string/audio_recorder_sum" android:icon="@drawable/ic_mic_white_24dp" android:key="@string/pref_record_audio_enable"></SwitchPreference>
+    </PreferenceCategory>
+
+
+    <PreferenceCategory android:title="@string/setting_camera_configuration" android:order="2" android:key="@string/pref_camera_config">
+        <SwitchPreference android:defaultValue="false" android:title="@string/camera_title" android:summary="@string/camera_sum" android:icon="@drawable/ic_videocam_white_24dp" android:key="@string/pref_camera_show_enable"></SwitchPreference>
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/setting_other_configuration" android:order="3" android:key="@string/pref_other_config">
+        <SwitchPreference android:defaultValue="false" android:title="@string/touches_show_title" android:icon="@drawable/ic_touch_app_white_24dp" android:key="@string/pref_show_touches_enable" android:summary="@string/touches_show_sum"></SwitchPreference>
+
+        <SwitchPreference android:defaultValue="false" android:title="@string/count_down_title" android:key="@string/pref_countdown_enable" android:icon="@drawable/ic_timer_24dp" android:summary="@string/count_down_sum"></SwitchPreference>
+
+        <com.ami.customui.ListPreferenceCustom android:title="@string/count_down_value_title" android:key="@string/pref_counddown_value" android:icon="@drawable/ic_countdown_value_white_24dp" android:entryValues="@array/setting_countdown_values" android:entries="@array/setting_countdown_entries" android:defaultValue="3"  ></com.ami.customui.ListPreferenceCustom>
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/layout_bg_gallery"
+    android:padding="2dp"
+    android:layout_margin="2dp">
+    <FrameLayout android:layout_width="0dp"
+        android:layout_height="@dimen/image_item_height"
+        android:layout_weight="2"
+        android:orientation="horizontal"
+        >
+        <ImageView android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/ic_high_quality_white_24dp"
+            android:id="@+id/imageViewThumbanail"
+             />
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_play_circle_filled_black_24dp"
+            android:layout_gravity="center"
+            android:id="@+id/imageViewPlay"
+            android:background="@drawable/control_bar_buttons_touch_feedback"/>
+    </FrameLayout>
+
+    <RelativeLayout
+        android:layout_width="0dp"
+        android:layout_height="@dimen/image_item_height"
+        android:layout_weight="3"
+        android:orientation="vertical"
+        android:layout_marginLeft="5dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="2015-05-12"
+            android:id="@+id/textViewName"
+            android:textColor="@color/white"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="00:14"
+            android:id="@+id/textViewDuration"
+            android:layout_below="@+id/textViewName"
+            android:textColor="@android:color/darker_gray"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="9.26 Mb"
+            android:id="@+id/textViewSize"
+            android:layout_below="@+id/textViewDuration"
+            android:textColor="@android:color/darker_gray"/>
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/imageButtonShare"
+            android:src="@drawable/ic_share_white_24dp"
+            android:background="@drawable/control_bar_buttons_touch_feedback"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginRight="5dp"
+            android:layout_marginBottom="5dp"
+             />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/imageButtonEdit"
+            android:src="@drawable/ic_create_white_24dp"
+            android:layout_alignParentBottom="true"
+            android:layout_toStartOf="@+id/imageButtonShare"
+            android:layout_marginRight="10dp"
+            android:layout_marginBottom="5dp"
+            android:background="@drawable/control_bar_buttons_touch_feedback"
+            />
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/imageButtonDelete"
+            android:src="@drawable/ic_delete_black_24dp"
+            android:layout_alignParentBottom="true"
+            android:layout_toStartOf="@+id/imageButtonEdit"
+            android:layout_marginRight="10dp"
+            android:layout_marginBottom="5dp"
+            android:background="@drawable/control_bar_buttons_touch_feedback"
+            />
+    </RelativeLayout>
+
+
+</LinearLayout>
