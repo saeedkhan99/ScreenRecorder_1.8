@@ -23,6 +23,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.analytics.HitBuilders;
 
 import org.m4m.samples.ComposerAudioEffectActivity;
 import org.m4m.samples.ComposerCutActivity;
@@ -34,6 +35,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
+import sim.ami.com.myapplication.AppImpl;
 import sim.ami.com.myapplication.Constant;
 import sim.ami.com.myapplication.R;
 
@@ -135,14 +137,20 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.MyViewHo
                         switch (item.getItemId()){
                             case R.id.item_cut_video:
                                // Toast.makeText(context,"Cut video",Toast.LENGTH_SHORT).show();
+                               // AppImpl.tracker().setScreenName("Gallery-Cut-Video");
+                               // AppImpl.tracker().send(new HitBuilders.ScreenViewBuilder().build());
                                 startEditVideo(index, Constant.CMD_CUT_VIDEO);
                                 return true;
                             case R.id.item_video_effect:
                                 //Toast.makeText(context,"Video effect",Toast.LENGTH_SHORT).show();
+                               // AppImpl.tracker().setScreenName("Gallery-Effect-Video");
+                               // AppImpl.tracker().send(new HitBuilders.ScreenViewBuilder().build());
                                 startEditVideo(index,Constant.CMD_EFFECT_VICEO);
                                 return true;
                             case R.id.item_time_scaling:
                                 //Toast.makeText(context,"Time Scaling",Toast.LENGTH_SHORT).show();
+                              //  AppImpl.tracker().setScreenName("Gallery-TimeScaling-Video");
+                               // AppImpl.tracker().send(new HitBuilders.ScreenViewBuilder().build());
                                 startEditVideo(index,Constant.CMD_TIME_SCALING);
                                 return true;
                             default:
@@ -158,6 +166,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.MyViewHo
             @Override
             public void onClick(View v) {
                 // Toast.makeText(context,"Click to delete",Toast.LENGTH_SHORT).show();
+
                 MyViewHolder myViewHolder = (MyViewHolder)v.getTag();
                 int index = myViewHolder.getPosition();
                 confirmDeleteVideo(index);
@@ -172,6 +181,8 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.MyViewHo
     }
 
     public void deleteVideo(int index){
+        AppImpl.tracker().setScreenName("Gallery-Delete-Video");
+        AppImpl.tracker().send(new HitBuilders.ScreenViewBuilder().build());
         moviesList.remove(index);
         notifyDataSetChanged();
     }

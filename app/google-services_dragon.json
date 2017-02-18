@@ -1,27 +1,27 @@
 {
   "project_info": {
-    "project_number": "522950763582",
-    "firebase_url": "https://screen-recorder-b3a2c.firebaseio.com",
-    "project_id": "screen-recorder-b3a2c",
-    "storage_bucket": "screen-recorder-b3a2c.appspot.com"
+    "project_number": "151878052512",
+    "firebase_url": "https://screen-recorder-ce7a2.firebaseio.com",
+    "project_id": "screen-recorder-ce7a2",
+    "storage_bucket": "screen-recorder-ce7a2.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:522950763582:android:c5e21432065a61da",
+        "mobilesdk_app_id": "1:151878052512:android:8a48a29ead815ff1",
         "android_client_info": {
-          "package_name": "com.grematruth.screenrec"
+          "package_name": "app.dragon.screen.recorder"
         }
       },
       "oauth_client": [
         {
-          "client_id": "522950763582-bqtgs9vvsgn0l822qv7j7d4tp6ia6d06.apps.googleusercontent.com",
+          "client_id": "151878052512-0akcntpe1s2npn7jpc2sr4rqfgaeqaa6.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyA8jS4DAmPNZGpswLr-3cgzHXLCjapArvs"
+          "current_key": "AIzaSyAO9txYxbMr7zeY2ASEUlzl_om_wSOpkl0"
         }
       ],
       "services": {

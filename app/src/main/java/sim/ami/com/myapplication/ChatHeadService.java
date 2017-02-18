@@ -13,6 +13,7 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
+import android.graphics.drawable.AnimationDrawable;
 import android.hardware.Camera;
 import android.hardware.Camera.CameraInfo;
 import android.hardware.SensorManager;
@@ -51,6 +52,10 @@ import android.view.SurfaceView;
 import android.view.TouchDelegate;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.LinearInterpolator;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -61,6 +66,7 @@ import android.widget.ToggleButton;
 import com.ami.com.ami.utils.Config;
 import com.ami.com.ami.utils.MyPreference;
 import com.ami.com.ami.utils.Utils;
+import com.google.android.gms.analytics.HitBuilders;
 
 import java.io.File;
 import java.io.IOException;
@@ -167,14 +173,14 @@ public class ChatHeadService extends Service implements ShakeDetector.Listener{
 
     private   int MAGIC_BT_WIDTH = 96;
     private   int MAGIC_BT_HEIGHT = 45;
-    private View mMagicButtonView;
+    private ImageView mMagicButtonView;
 
     private TextView countDownTextView;
     private TextView tutorialStopTextView;
     private ImageView tutorialStopImageView;
     private File outputRoot;
     private final DateFormat fileFormat =
-            new SimpleDateFormat("'AMI_'yyyy-MM-dd-HH-mm-ss'.mp4'", Locale.US);
+            new SimpleDateFormat("'VID_'yyyy-MM-dd-HH-mm-ss'.mp4'", Locale.US);
     private boolean isPrepareRecorderSuccess = false;
 
     public static Intent newIntent(Context context, int resultCode, Intent data) {
@@ -212,7 +218,7 @@ public class ChatHeadService extends Service implements ShakeDetector.Listener{
                         | FLAG_LAYOUT_IN_SCREEN, TRANSLUCENT);
         params.gravity = Gravity.TOP | gravityEndLocaleHack();
         params.y = getResources().getDimensionPixelSize(R.dimen.magic_button_h);
-        tutorialStopTextView.setText("Touch area to stop recording");
+        tutorialStopTextView.setText("Touch here or Shake screen to stop recording");
         tutorialStopTextView.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
 
 
@@ -251,14 +257,28 @@ public class ChatHeadService extends Service implements ShakeDetector.Listener{
         countDownTextView.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
         countDownTextView.setVisibility(View.INVISIBLE);
     }
+
+    private Animation createAnimation(){
+        final Animation animation = new AlphaAnimation(1, 0); // Change alpha from fully visible to invisible
+        animation.setDuration(500); // duration - half a second
+        animation.setInterpolator(new LinearInterpolator()); // do not alter animation rate
+        animation.setRepeatCount(Animation.INFINITE); // Repeat animation infinitely
+        animation.setRepeatMode(Animation.REVERSE); // Reverse animation at the end so the button will fade back in
+
+        return animation;
+    }
     private void initMagicButton(){
-        mMagicButtonView = new View(this);
+
+
+        mMagicButtonView = new ImageView(this);
+        mMagicButtonView.setImageResource(R.drawable.image_blink);
+
      //   mMagicButtonView.setBackgroundColor(getResources().getColor(android.R.color.holo_red_dark));
         MAGIC_BT_WIDTH = getResources().getDimensionPixelSize(R.dimen.magic_button_w);
         if (Build.VERSION.SDK_INT > LOLLIPOP_MR1 || "M".equals(Build.VERSION.RELEASE)) {
-            MAGIC_BT_HEIGHT = getResources().getDimensionPixelSize(R.dimen.magic_button_h1);
+            MAGIC_BT_HEIGHT = 2*getResources().getDimensionPixelSize(R.dimen.magic_button_h1);
         }else{
-            MAGIC_BT_HEIGHT = getResources().getDimensionPixelSize(R.dimen.magic_button_h);
+            MAGIC_BT_HEIGHT = 2*getResources().getDimensionPixelSize(R.dimen.magic_button_h);
         }
         final WindowManager.LayoutParams params =
                 new WindowManager.LayoutParams(MAGIC_BT_WIDTH, MAGIC_BT_HEIGHT, TYPE_TOAST, FLAG_NOT_FOCUSABLE
@@ -500,6 +520,8 @@ public class ChatHeadService extends Service implements ShakeDetector.Listener{
                     delayTime = false;
                     return;
                 }
+               // AppImpl.tracker().setScreenName("Quick-Setting-StartRecord");
+               // AppImpl.tracker().send(new HitBuilders.ScreenViewBuilder().build());
                 startRecord();
 
             }
@@ -513,6 +535,8 @@ public class ChatHeadService extends Service implements ShakeDetector.Listener{
                     delayTime = false;
                     return;
                 }
+              //  AppImpl.tracker().setScreenName("Quick-Setting-Gallery");
+               // AppImpl.tracker().send(new HitBuilders.ScreenViewBuilder().build());
                 Intent intent = new Intent(ChatHeadService.this, gallery.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
@@ -533,7 +557,8 @@ public class ChatHeadService extends Service implements ShakeDetector.Listener{
                     delayTime = false;
                     return;
                 }
-
+               // AppImpl.tracker().setScreenName("Quick-Setting-Setting");
+                //AppImpl.tracker().send(new HitBuilders.ScreenViewBuilder().build());
                 Intent intent = new Intent(ChatHeadService.this, Setting.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
@@ -708,7 +733,7 @@ public class ChatHeadService extends Service implements ShakeDetector.Listener{
 
     private void makeOutputFolder(){
         File picturesDir = Environment.getExternalStoragePublicDirectory(DIRECTORY_MOVIES);
-        outputRoot = new File(picturesDir, "AMIRecorder");
+        outputRoot = new File(picturesDir, "VIDRecorder");
         if(!outputRoot.exists()){
             boolean mk = outputRoot.mkdirs();
             if(mk)
@@ -1020,6 +1045,11 @@ public class ChatHeadService extends Service implements ShakeDetector.Listener{
                         mVirtualDisplay = createVirtualDisplay();
                         if(mVirtualDisplay != null)
                             mMediaRecorder.start();
+                        mMagicButtonView.setVisibility(View.VISIBLE);
+                       // mMagicButtonView.setAlpha((float)0.2);
+                       // mMagicButtonView.startAnimation(createAnimation());
+                        AnimationDrawable frameAnimation = (AnimationDrawable) mMagicButtonView.getDrawable();
+                        frameAnimation.start();
                     }else{
 
 
@@ -1030,6 +1060,7 @@ public class ChatHeadService extends Service implements ShakeDetector.Listener{
                 }else if(extra.equalsIgnoreCase(Constant.CMD_UPDATE_CONFIG)){
                     Log.e("ChatHeadService","UPDATE CONFIG");
                     popupView.setVisibility(View.VISIBLE);
+                    mMagicButtonView.setVisibility(View.GONE);
                     updateConfig();
                 }
             }

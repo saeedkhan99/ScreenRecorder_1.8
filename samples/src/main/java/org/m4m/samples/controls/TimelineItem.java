@@ -183,7 +183,7 @@ public class TimelineItem extends RelativeLayout implements View.OnClickListener
 
        // File outputFolder = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES).getPath(), DEFAULT_MEDIA_PACK_FOLDER);
         String substring = genFileName();
-        File outputFolder = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES).getPath() + "/AMIRecorder");
+        File outputFolder = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES).getPath() + "/VIDRecorder");
         if (!outputFolder.exists()) {
             outputFolder.mkdirs();
         }

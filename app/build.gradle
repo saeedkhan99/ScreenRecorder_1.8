@@ -5,11 +5,11 @@ android {
     buildToolsVersion "23.0.2"
 
     defaultConfig {
-        applicationId "app.dragon.screen.recorder"
+        applicationId "com.grematruth.screenrec"
         minSdkVersion 21
         targetSdkVersion 22
-        versionCode 11
-        versionName "1.2"
+        versionCode 12
+        versionName "1.0.1"
     }
     buildTypes {
         release {
@@ -41,5 +41,6 @@ dependencies {
     compile project(':effects')
     compile project(':samples')
     compile 'com.github.szugyi:Android-CircleMenu:2.0.0'
+    compile 'com.google.android.gms:play-services-analytics:9.0.0'
 }
 apply plugin: 'com.google.gms.google-services'

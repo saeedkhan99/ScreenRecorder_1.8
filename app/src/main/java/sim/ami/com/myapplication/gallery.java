@@ -39,7 +39,8 @@ public class gallery extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gallery);
         AdView mAdView = (AdView) findViewById(R.id.adView);
-        AdRequest adRequest = new AdRequest.Builder().build();
+        AdRequest adRequest = new AdRequest.Builder().addTestDevice("F80D37A8A15B375ED7AD2F7CC3C7C2D4").addTestDevice("7F02914F9C4D5DEB8EF81FD66BFA0A0A")
+            .build();
         mAdView.loadAd(adRequest);
         ActionBar actionBar = getActionBar();
         if (actionBar != null) {
@@ -71,7 +72,7 @@ public class gallery extends Activity {
     }
 
     private void requestNewInterstitial() {
-        AdRequest adRequest = new AdRequest.Builder()
+        AdRequest adRequest = new AdRequest.Builder().addTestDevice("F80D37A8A15B375ED7AD2F7CC3C7C2D4").addTestDevice("7F02914F9C4D5DEB8EF81FD66BFA0A0A")
             .build();
         mInterstitialAd.loadAd(adRequest);
     }
@@ -81,7 +82,7 @@ public class gallery extends Activity {
     protected void onResume() {
         super.onResume();
 
-        File folder = new File(Environment.getExternalStoragePublicDirectory(DIRECTORY_MOVIES) + "/AMIRecorder");
+        File folder = new File(Environment.getExternalStoragePublicDirectory(DIRECTORY_MOVIES) + "/VIDRecorder");
         ArrayList<File> listVideo = Utils.getAllFile(folder,"video");
         MediaMetadataRetriever retriever = new MediaMetadataRetriever();
         //use one of overloaded setDataSource() functions to set your data source
