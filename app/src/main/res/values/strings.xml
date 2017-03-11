@@ -68,8 +68,8 @@
     <string name="popup_menu_edit_replace_audio">Replace Audio</string>
     <string name="popup_menu_edit_effect">Video Effect</string>
     <string name="popup_menu_edit_time_scaling">Time Scaling</string>
-    <string name="banner_ad_unit_id">ca-app-pub-9070811400863761/4567730795</string>
-    <string name="instertitial_ad_unit_id">ca-app-pub-9070811400863761/6044463998</string>
+    <string name="banner_ad_unit_id">banner_id_here</string>
+    <string name="instertitial_ad_unit_id">full_ads_id_here</string>
     <string name="accept_alert">Please accept permisson. The permission only to draw task bar on
         screen
     </string>

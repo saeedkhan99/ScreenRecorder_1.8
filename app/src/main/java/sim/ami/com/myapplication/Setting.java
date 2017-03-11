@@ -17,7 +17,7 @@ import android.widget.TextView;
 public class Setting extends PreferenceActivity {
 
 
-  private final String PRIVACY_LINK = "http://gremaapps.blogspot.com.ng/p/privacy-policy.html?m=1";
+  private final String PRIVACY_LINK = "http://google.com";
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -40,21 +40,7 @@ public class Setting extends PreferenceActivity {
     public void onCreate(final Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
       addPreferencesFromResource(R.xml.preferences);
-      /*
-      TextView privacy;
-      privacy = (TextView) findViewById(R.id.privacy_policy);
-      privacy.setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-          try {
-            Intent myIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(PRIVACY_LINK));
-            startActivity(myIntent);
-          } catch (ActivityNotFoundException e) {
 
-          }
-        }
-      });
-      */
       Preference preference = findPreference("privacy_policy");
       preference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
         @Override
@@ -87,7 +73,6 @@ public class Setting extends PreferenceActivity {
 
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
-    //getMenuInflater().inflate(R.menu.home,menu);
     return super.onCreateOptionsMenu(menu);
   }
 
