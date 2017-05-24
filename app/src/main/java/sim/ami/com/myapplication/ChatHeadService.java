@@ -1,24 +1,16 @@
 package sim.ami.com.myapplication;
 
-import android.*;
 import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Service;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-
 import android.content.res.Configuration;
 import android.graphics.PixelFormat;
-import android.graphics.Rect;
 import android.graphics.drawable.AnimationDrawable;
 import android.hardware.Camera;
-import android.hardware.Camera.CameraInfo;
 import android.hardware.SensorManager;
 import android.hardware.camera2.CameraAccessException;
-import android.hardware.camera2.CameraDevice;
 import android.hardware.camera2.CameraManager;
 import android.hardware.display.DisplayManager;
 import android.hardware.display.VirtualDisplay;
@@ -33,40 +25,28 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.provider.Settings;
-import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.widget.DrawerLayout;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.SparseIntArray;
 import android.view.Display;
-import android.view.DragEvent;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.view.TouchDelegate;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ToggleButton;
 
 import com.ami.com.ami.utils.Config;
 import com.ami.com.ami.utils.MyPreference;
-import com.ami.com.ami.utils.Utils;
-import com.google.android.gms.analytics.HitBuilders;
 
 import java.io.File;
 import java.io.IOException;
@@ -75,48 +55,25 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.NoSuchElementException;
 
-import static android.app.PendingIntent.FLAG_CANCEL_CURRENT;
-import static android.content.Context.MEDIA_PROJECTION_SERVICE;
-import static android.content.Context.NOTIFICATION_SERVICE;
-import static android.content.Context.WINDOW_SERVICE;
-import static android.content.Intent.ACTION_SEND;
-import static android.content.Intent.ACTION_VIEW;
 import static android.content.res.Configuration.ORIENTATION_LANDSCAPE;
-import static android.graphics.PixelFormat.TRANSLUCENT;
-import static android.hardware.display.DisplayManager.VIRTUAL_DISPLAY_FLAG_PRESENTATION;
-import static android.media.MediaRecorder.OutputFormat.MPEG_4;
-import static android.media.MediaRecorder.VideoEncoder.H264;
-import static android.media.MediaRecorder.VideoSource.SURFACE;
 import static android.os.Build.VERSION_CODES.LOLLIPOP_MR1;
 import static android.os.Environment.DIRECTORY_MOVIES;
 import static android.text.TextUtils.getLayoutDirectionFromLocale;
-import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
-import static android.view.WindowManager.LayoutParams.FLAG_LAYOUT_INSET_DECOR;
-import static android.view.WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN;
-import static android.view.WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS;
-import static android.view.WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
-import static android.view.WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL;
-import static android.view.WindowManager.LayoutParams.TYPE_APPLICATION_PANEL;
-import static android.view.WindowManager.LayoutParams.TYPE_PHONE;
-import static android.view.WindowManager.LayoutParams.TYPE_SYSTEM_ERROR;
-import static android.view.WindowManager.LayoutParams.TYPE_TOAST;
 import static android.widget.Toast.LENGTH_SHORT;
 
 /**
  * Created by Administrator on 4/25/2016.
  */
-public class ChatHeadService extends Service implements ShakeDetector.Listener{
+public class ChatHeadService extends Service implements ShakeDetector.Listener {
 
-    private  WindowManager windowManager;
+    private WindowManager windowManager;
     WindowManager.LayoutParams params;
     WindowManager.LayoutParams paramsCam;
-    private  View popupView;
+    private View popupView;
     ImageButton captureImage;
     ImageButton showGallery;
     ImageButton showSetting;
@@ -130,34 +87,36 @@ public class ChatHeadService extends Service implements ShakeDetector.Listener{
     private static final int REQUEST_CODE = 1000;
     private int mScreenDensity;
     private MediaProjectionManager mProjectionManager;
-    private  int DISPLAY_WIDTH = 720;
-    private  int DISPLAY_HEIGHT = 1280;
+    private int DISPLAY_WIDTH = 720;
+    private int DISPLAY_HEIGHT = 1280;
     private int AUDIO_SOURCE = MediaRecorder.AudioSource.MIC;
     private int FRAME_RATE = 30;
     private int BIT_RATE = 1500000;
     private int ORIENTATION = 90;
     private int COUNT_DOWN_VALUE = 3;
 
-    private  MediaProjection mMediaProjection;
-    private  VirtualDisplay mVirtualDisplay;
-    private  MediaProjectionCallback mMediaProjectionCallback;
-    private  MediaRecorder mMediaRecorder;
+    private MediaProjection mMediaProjection;
+    private VirtualDisplay mVirtualDisplay;
+    private MediaProjectionCallback mMediaProjectionCallback;
+    private MediaRecorder mMediaRecorder;
     private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
     private static final int REQUEST_PERMISSIONS = 10;
+
     static {
         ORIENTATIONS.append(Surface.ROTATION_0, 90);
         ORIENTATIONS.append(Surface.ROTATION_90, 0);
         ORIENTATIONS.append(Surface.ROTATION_180, 270);
         ORIENTATIONS.append(Surface.ROTATION_270, 180);
     }
+
     private static final int CAM_HEIGHT = 240;
     private static final int CAM_WIDTH = 320;
 
     //For camera preview
-    private static SurfaceView preview=null;
-    private static SurfaceHolder previewHolder=null;
-    private static  Camera camera=null;
-    private static boolean inPreview=false;
+    private static SurfaceView preview = null;
+    private static SurfaceHolder previewHolder = null;
+    private static Camera camera = null;
+    private static boolean inPreview = false;
     private int id;
 
     //For Shake
@@ -171,8 +130,8 @@ public class ChatHeadService extends Service implements ShakeDetector.Listener{
     private static final String EXTRA_RESULT_CODE = "result-code";
     private static final String EXTRA_DATA = "data";
 
-    private   int MAGIC_BT_WIDTH = 96;
-    private   int MAGIC_BT_HEIGHT = 45;
+    private int MAGIC_BT_WIDTH = 96;
+    private int MAGIC_BT_HEIGHT = 45;
     private ImageView mMagicButtonView;
 
     private TextView countDownTextView;
@@ -190,6 +149,7 @@ public class ChatHeadService extends Service implements ShakeDetector.Listener{
         intent.putExtra(Constant.COMMAND, Constant.CMD_START_RECORD);
         return intent;
     }
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -208,14 +168,15 @@ public class ChatHeadService extends Service implements ShakeDetector.Listener{
         makeOutputFolder();
         updateProjectorConfig(mConfig);
     }
-    private void initTutorial(){
+
+    private void initTutorial() {
         tutorialStopTextView = new TextView(this);
         final WindowManager.LayoutParams params =
-                new WindowManager.LayoutParams(WRAP_CONTENT, WRAP_CONTENT, TYPE_TOAST, FLAG_NOT_FOCUSABLE
-                        | FLAG_NOT_TOUCH_MODAL
-                        | FLAG_LAYOUT_NO_LIMITS
-                        | FLAG_LAYOUT_INSET_DECOR
-                        | FLAG_LAYOUT_IN_SCREEN, TRANSLUCENT);
+                new WindowManager.LayoutParams(WindowManager.LayoutParams.WRAP_CONTENT,
+                        WindowManager.LayoutParams.WRAP_CONTENT,
+                        WindowManager.LayoutParams.TYPE_PHONE,
+                        262184,
+                        PixelFormat.TRANSLUCENT);
         params.gravity = Gravity.TOP | gravityEndLocaleHack();
         params.y = getResources().getDimensionPixelSize(R.dimen.magic_button_h);
         tutorialStopTextView.setText("Touch here or Shake screen to stop recording");
@@ -224,41 +185,43 @@ public class ChatHeadService extends Service implements ShakeDetector.Listener{
 
         tutorialStopImageView = new ImageView(this);
         tutorialStopImageView.setBackground(getDrawable(R.drawable.ic_touch_app_black_24dp));
-        windowManager.addView(tutorialStopImageView,params);
+        windowManager.addView(tutorialStopImageView, params);
         params.y += getResources().getDimensionPixelSize(R.dimen.magic_button_h);
-        windowManager.addView(tutorialStopTextView,params);
+        windowManager.addView(tutorialStopTextView, params);
 
     }
-    private void stopTutorial(){
+
+    private void stopTutorial() {
         tutorialStopImageView.setVisibility(View.INVISIBLE);
         tutorialStopTextView.setVisibility(View.INVISIBLE);
     }
 
-    private void removeTutorial(){
-        if(tutorialStopImageView != null){
+    private void removeTutorial() {
+        if (tutorialStopImageView != null && tutorialStopImageView.isAttachedToWindow()) {
             windowManager.removeView(tutorialStopImageView);
         }
-        if(tutorialStopTextView != null){
+        if (tutorialStopTextView != null && tutorialStopTextView.isAttachedToWindow()) {
             windowManager.removeView(tutorialStopTextView);
         }
     }
-    private void initCountDown(){
+
+    private void initCountDown() {
         countDownTextView = new TextView(this);
         final WindowManager.LayoutParams params =
-                new WindowManager.LayoutParams(WRAP_CONTENT, WRAP_CONTENT, TYPE_TOAST, FLAG_NOT_FOCUSABLE
-                        | FLAG_NOT_TOUCH_MODAL
-                        | FLAG_LAYOUT_NO_LIMITS
-                        | FLAG_LAYOUT_INSET_DECOR
-                        | FLAG_LAYOUT_IN_SCREEN, TRANSLUCENT);
-        params.gravity = Gravity.CENTER ;
+                new WindowManager.LayoutParams(WindowManager.LayoutParams.WRAP_CONTENT,
+                        WindowManager.LayoutParams.WRAP_CONTENT,
+                        WindowManager.LayoutParams.TYPE_PHONE,
+                        262184,
+                        PixelFormat.TRANSLUCENT);
+        params.gravity = Gravity.CENTER;
         countDownTextView.setTextSize(getResources().getDimensionPixelSize(R.dimen.magic_button_h1));
         countDownTextView.setText("3");
-        windowManager.addView(countDownTextView,params);
+        windowManager.addView(countDownTextView, params);
         countDownTextView.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
         countDownTextView.setVisibility(View.INVISIBLE);
     }
 
-    private Animation createAnimation(){
+    private Animation createAnimation() {
         final Animation animation = new AlphaAnimation(1, 0); // Change alpha from fully visible to invisible
         animation.setDuration(500); // duration - half a second
         animation.setInterpolator(new LinearInterpolator()); // do not alter animation rate
@@ -267,71 +230,76 @@ public class ChatHeadService extends Service implements ShakeDetector.Listener{
 
         return animation;
     }
-    private void initMagicButton(){
+
+    private void initMagicButton() {
 
 
         mMagicButtonView = new ImageView(this);
         mMagicButtonView.setImageResource(R.drawable.image_blink);
 
-     //   mMagicButtonView.setBackgroundColor(getResources().getColor(android.R.color.holo_red_dark));
+        //   mMagicButtonView.setBackgroundColor(getResources().getColor(android.R.color.holo_red_dark));
         MAGIC_BT_WIDTH = getResources().getDimensionPixelSize(R.dimen.magic_button_w);
         if (Build.VERSION.SDK_INT > LOLLIPOP_MR1 || "M".equals(Build.VERSION.RELEASE)) {
-            MAGIC_BT_HEIGHT = 2*getResources().getDimensionPixelSize(R.dimen.magic_button_h1);
-        }else{
-            MAGIC_BT_HEIGHT = 2*getResources().getDimensionPixelSize(R.dimen.magic_button_h);
+            MAGIC_BT_HEIGHT = 2 * getResources().getDimensionPixelSize(R.dimen.magic_button_h1);
+        } else {
+            MAGIC_BT_HEIGHT = 2 * getResources().getDimensionPixelSize(R.dimen.magic_button_h);
         }
         final WindowManager.LayoutParams params =
-                new WindowManager.LayoutParams(MAGIC_BT_WIDTH, MAGIC_BT_HEIGHT, TYPE_TOAST, FLAG_NOT_FOCUSABLE
-                        | FLAG_NOT_TOUCH_MODAL
-                        | FLAG_LAYOUT_NO_LIMITS
-                        | FLAG_LAYOUT_INSET_DECOR
-                        | FLAG_LAYOUT_IN_SCREEN, TRANSLUCENT);
+                new WindowManager.LayoutParams(MAGIC_BT_WIDTH, MAGIC_BT_HEIGHT,
+                        WindowManager.LayoutParams.TYPE_PHONE,
+                        262184,
+                        PixelFormat.TRANSLUCENT);
         params.gravity = Gravity.TOP | gravityEndLocaleHack();
-        params.y = getResources().getDimensionPixelSize(R.dimen.magic_button_h);;
-        windowManager.addView(mMagicButtonView,params);
+        params.y = getResources().getDimensionPixelSize(R.dimen.magic_button_h);
+        ;
+        windowManager.addView(mMagicButtonView, params);
         mMagicButtonView.setVisibility(View.INVISIBLE);
 
     }
+
     @SuppressLint("RtlHardcoded") // Gravity.END is not honored by WindowManager for added views.
     private static int gravityEndLocaleHack() {
         int direction = getLayoutDirectionFromLocale(Locale.getDefault());
         return direction == View.LAYOUT_DIRECTION_RTL ? Gravity.LEFT : Gravity.RIGHT;
     }
-    private void initConfig(){
+
+    private void initConfig() {
         mConfig = MyPreference.getInstance(this).getConfig();
 
     }
-    private void initProjectorConfig(){
+
+    private void initProjectorConfig() {
 
     }
-    private void initCamera(){
+
+    private void initCamera() {
 
         int currentapiVersion = android.os.Build.VERSION.SDK_INT;
         getCameraApi23();
-        if (currentapiVersion > android.os.Build.VERSION_CODES.FROYO){
-            id=findFrontFacingCameraEx();
-            Log.d("TestLedActivity","L'id trovato e': "+id);
-            try{
-            camera = Camera.open(id);
-            } catch (Exception e){
+        if (currentapiVersion > android.os.Build.VERSION_CODES.FROYO) {
+            id = findFrontFacingCameraEx();
+            Log.d("TestLedActivity", "L'id trovato e': " + id);
+            try {
+                camera = Camera.open(id);
+            } catch (Exception e) {
 
             }
 
-        } else{
-            Log.d("TestLedActivity","La versione e' froyo");
+        } else {
+            Log.d("TestLedActivity", "La versione e' froyo");
             camera = getFrontFacingCamera();
         }
 
         preview = new SurfaceView(this);
-        previewHolder=preview.getHolder();
+        previewHolder = preview.getHolder();
         previewHolder.addCallback(surfaceCallback);
         previewHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
 
-        paramsCam= new WindowManager.LayoutParams(
+        paramsCam = new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.WRAP_CONTENT,
-                WindowManager.LayoutParams.TYPE_TOAST,
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+                WindowManager.LayoutParams.TYPE_PHONE,
+                262184,
                 PixelFormat.TRANSLUCENT);
 
         paramsCam.gravity = Gravity.TOP | Gravity.LEFT;
@@ -346,6 +314,7 @@ public class ChatHeadService extends Service implements ShakeDetector.Listener{
                                        private int initialY;
                                        private float initialTouchX;
                                        private float initialTouchY;
+
                                        @Override
                                        public boolean onTouch(View v, MotionEvent event) {
                                            switch (event.getAction()) {
@@ -355,10 +324,10 @@ public class ChatHeadService extends Service implements ShakeDetector.Listener{
                                                    initialTouchX = event.getRawX();
                                                    initialTouchY = event.getRawY();
 
-                                                   return  true;
+                                                   return true;
                                                case MotionEvent.ACTION_UP:
 
-                                                   return  true;
+                                                   return true;
                                                case MotionEvent.ACTION_MOVE:
                                                    paramsCam.x = initialX
                                                            + (int) (event.getRawX() - initialTouchX);
@@ -374,7 +343,7 @@ public class ChatHeadService extends Service implements ShakeDetector.Listener{
         );
 
         windowManager.addView(preview, paramsCam);
-        if(!mConfig.isEnableShowCamera())
+        if (!mConfig.isEnableShowCamera())
             preview.setVisibility(View.GONE);
 
     }
@@ -383,7 +352,7 @@ public class ChatHeadService extends Service implements ShakeDetector.Listener{
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
 
-        if(camera != null && inPreview == true) {
+        if (camera != null && inPreview == true) {
             Camera.Parameters parameters = camera.getParameters();
             Display display = ((WindowManager) getSystemService(WINDOW_SERVICE)).getDefaultDisplay();
             if (display.getRotation() == Surface.ROTATION_0) {
@@ -413,7 +382,7 @@ public class ChatHeadService extends Service implements ShakeDetector.Listener{
 
     }
 
-    private void initProjector(){
+    private void initProjector() {
         DisplayMetrics metrics = new DisplayMetrics();
         windowManager.getDefaultDisplay().getMetrics(metrics);
         mScreenDensity = metrics.densityDpi;
@@ -421,25 +390,26 @@ public class ChatHeadService extends Service implements ShakeDetector.Listener{
                 (Context.MEDIA_PROJECTION_SERVICE);
 
     }
-    private void initView(){
+
+    private void initView() {
 
 
-        LayoutInflater layoutInflater = (LayoutInflater)this.getSystemService(LAYOUT_INFLATER_SERVICE);
+        LayoutInflater layoutInflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
         popupView = (View) layoutInflater.inflate(R.layout.quick_setting, null);
 
         //View cricleView = (View)layoutInflater.inflate(R.layout.cricle_quick_setting,null);
 
 
-        captureImage = (ImageButton)popupView.findViewById(R.id.capture_image);
-        showGallery = (ImageButton)popupView.findViewById(R.id.gallery);
-        showSetting = (ImageButton)popupView.findViewById(R.id.setting);
-        exitApp = (ImageButton)popupView.findViewById(R.id.exit);
+        captureImage = (ImageButton) popupView.findViewById(R.id.capture_image);
+        showGallery = (ImageButton) popupView.findViewById(R.id.gallery);
+        showSetting = (ImageButton) popupView.findViewById(R.id.setting);
+        exitApp = (ImageButton) popupView.findViewById(R.id.exit);
 
-        params= new WindowManager.LayoutParams(
+        params = new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.WRAP_CONTENT,
-                WindowManager.LayoutParams.TYPE_TOAST,
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+                WindowManager.LayoutParams.TYPE_PHONE,
+                262184,
                 PixelFormat.TRANSLUCENT);
 
         params.gravity = Gravity.TOP | Gravity.LEFT;
@@ -452,41 +422,29 @@ public class ChatHeadService extends Service implements ShakeDetector.Listener{
         exitApp.setOnTouchListener(touchListener);
         windowManager.addView(popupView, params);
 
-        /*
-        WindowManager.LayoutParams paramsC= new WindowManager.LayoutParams(
-            WindowManager.LayoutParams.WRAP_CONTENT,
-            WindowManager.LayoutParams.WRAP_CONTENT,
-            WindowManager.LayoutParams.TYPE_TOAST,
-            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
-            PixelFormat.TRANSLUCENT);
+    }
 
-        paramsC.gravity = Gravity.CENTER_VERTICAL | Gravity.RIGHT;
-        paramsC.x = 0;
-        paramsC.y = 100;
-
-        windowManager.addView(cricleView,paramsC);
-        */
-
+    private void initShake() {
+        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        shakeDetector = new ShakeDetector(this);
+        startShake();
 
     }
-    private void initShake(){
-         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
-         shakeDetector = new ShakeDetector(this);
-         startShake();
 
-    }
-    private void startShake(){
+    private void startShake() {
         shakeDetector.start(sensorManager);
     }
-    private void stopShake(){
-      // shakeDetector.stop();
+
+    private void stopShake() {
+        // shakeDetector.stop();
     }
-    private void startRecord(){
+
+    private void startRecord() {
         stopTutorial();
 
-        if(mConfig.isEnableCountdown()){
+        if (mConfig.isEnableCountdown()) {
             popupView.setVisibility(View.INVISIBLE);
-            int countTime = Integer.parseInt(mConfig.getCountDownValue())*1000;
+            int countTime = Integer.parseInt(mConfig.getCountDownValue()) * 1000;
             countDownTextView.setVisibility(View.VISIBLE);
             new CountDownTimer(countTime, 1000) {
 
@@ -499,12 +457,13 @@ public class ChatHeadService extends Service implements ShakeDetector.Listener{
                     onToggleScreenShare();
                 }
             }.start();
-        }else {
+        } else {
             onToggleScreenShare();
         }
 
     }
-    private void initListenner(){
+
+    private void initListenner() {
         mMagicButtonView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -516,12 +475,12 @@ public class ChatHeadService extends Service implements ShakeDetector.Listener{
         captureImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(delayTime){
+                if (delayTime) {
                     delayTime = false;
                     return;
                 }
-               // AppImpl.tracker().setScreenName("Quick-Setting-StartRecord");
-               // AppImpl.tracker().send(new HitBuilders.ScreenViewBuilder().build());
+                // AppImpl.tracker().setScreenName("Quick-Setting-StartRecord");
+                // AppImpl.tracker().send(new HitBuilders.ScreenViewBuilder().build());
                 startRecord();
 
             }
@@ -531,12 +490,12 @@ public class ChatHeadService extends Service implements ShakeDetector.Listener{
         showGallery.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(delayTime){
+                if (delayTime) {
                     delayTime = false;
                     return;
                 }
-              //  AppImpl.tracker().setScreenName("Quick-Setting-Gallery");
-               // AppImpl.tracker().send(new HitBuilders.ScreenViewBuilder().build());
+                //  AppImpl.tracker().setScreenName("Quick-Setting-Gallery");
+                // AppImpl.tracker().send(new HitBuilders.ScreenViewBuilder().build());
                 Intent intent = new Intent(ChatHeadService.this, gallery.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
@@ -553,11 +512,11 @@ public class ChatHeadService extends Service implements ShakeDetector.Listener{
         showSetting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(delayTime){
+                if (delayTime) {
                     delayTime = false;
                     return;
                 }
-               // AppImpl.tracker().setScreenName("Quick-Setting-Setting");
+                // AppImpl.tracker().setScreenName("Quick-Setting-Setting");
                 //AppImpl.tracker().send(new HitBuilders.ScreenViewBuilder().build());
                 Intent intent = new Intent(ChatHeadService.this, Setting.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -571,11 +530,10 @@ public class ChatHeadService extends Service implements ShakeDetector.Listener{
         });
 
 
-
         exitApp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(delayTime){
+                if (delayTime) {
                     delayTime = false;
                     return;
                 }
@@ -595,6 +553,7 @@ public class ChatHeadService extends Service implements ShakeDetector.Listener{
                     delayTime = true;
                 }
             };
+
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 switch (event.getAction()) {
@@ -603,7 +562,7 @@ public class ChatHeadService extends Service implements ShakeDetector.Listener{
                         initialY = params.y;
                         initialTouchX = event.getRawX();
                         initialTouchY = event.getRawY();
-                        handler.postDelayed(runnable,200);
+                        handler.postDelayed(runnable, 200);
                         break;
                     case MotionEvent.ACTION_UP:
                         handler.removeCallbacks(runnable);
@@ -642,13 +601,13 @@ public class ChatHeadService extends Service implements ShakeDetector.Listener{
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (popupView != null)
+        if (popupView != null && popupView.isAttachedToWindow())
             windowManager.removeView(popupView);
-        if(mMagicButtonView != null)
+        if (mMagicButtonView != null && mMagicButtonView.isAttachedToWindow())
             windowManager.removeViewImmediate(mMagicButtonView);
-        if(preview != null)
+        if (preview != null && preview.isAttachedToWindow())
             windowManager.removeView(preview);
-        if(countDownTextView != null)
+        if (countDownTextView != null && countDownTextView.isAttachedToWindow())
             windowManager.removeView(countDownTextView);
         removeTutorial();
         destroyMediaProjection();
@@ -667,18 +626,18 @@ public class ChatHeadService extends Service implements ShakeDetector.Listener{
 
     @Override
     public void hearShake() {
-        Log.e(TAG,"hearShake");
-        if(isInScreenRecoder){
+        Log.e(TAG, "hearShake");
+        if (isInScreenRecoder) {
             mMagicButtonView.setVisibility(View.INVISIBLE);
             stopProjection();
             stopShake();
-           // Toast.makeText(getApplicationContext(),"Stopping Recording",Toast.LENGTH_SHORT).show();
+            // Toast.makeText(getApplicationContext(),"Stopping Recording",Toast.LENGTH_SHORT).show();
         }
     }
 
 
-    public  void stopRecording(){
-        if(isInScreenRecoder){
+    public void stopRecording() {
+        if (isInScreenRecoder) {
             isInScreenRecoder = false;
             stopProjection();
 
@@ -689,7 +648,7 @@ public class ChatHeadService extends Service implements ShakeDetector.Listener{
     private class MediaProjectionCallback extends MediaProjection.Callback {
         @Override
         public void onStop() {
-            Log.e("MediaProjectionCallback","onStop");
+            Log.e("MediaProjectionCallback", "onStop");
             /*
             mMediaRecorder.stop();
             mMediaRecorder.reset();
@@ -702,17 +661,18 @@ public class ChatHeadService extends Service implements ShakeDetector.Listener{
 
         }
     }
-    private  void stopScreenSharing() {
+
+    private void stopScreenSharing() {
 
         destroyMediaProjection();
 
         if (mVirtualDisplay == null) {
             return;
-        }else{
+        } else {
             mVirtualDisplay.release();
             mVirtualDisplay = null;
         }
-        if(mMediaRecorder == null)
+        if (mMediaRecorder == null)
             return;
 
 
@@ -721,7 +681,8 @@ public class ChatHeadService extends Service implements ShakeDetector.Listener{
 
 
     }
-    private  void  destroyMediaProjection() {
+
+    private void destroyMediaProjection() {
         if (mMediaProjection != null) {
             mMediaProjection.unregisterCallback(mMediaProjectionCallback);
             mMediaProjection.stop();
@@ -731,25 +692,26 @@ public class ChatHeadService extends Service implements ShakeDetector.Listener{
         //Toast.makeText(getApplicationContext(),"Destroy Media Projection",Toast.LENGTH_SHORT).show();
     }
 
-    private void makeOutputFolder(){
+    private void makeOutputFolder() {
         File picturesDir = Environment.getExternalStoragePublicDirectory(DIRECTORY_MOVIES);
         outputRoot = new File(picturesDir, "VIDRecorder");
-        if(!outputRoot.exists()){
+        if (!outputRoot.exists()) {
             boolean mk = outputRoot.mkdirs();
-            if(mk)
-                 Log.e("MK","TRUE");
+            if (mk)
+                Log.e("MK", "TRUE");
             else
-                Log.e("MK","FALSE");
+                Log.e("MK", "FALSE");
         }
 
 
     }
+
     private void initRecorder() {
 
         try {
 
-            Log.e("InitRecorder","Init Recorder");
-            Log.e("Media Recoder","WIDTH-HEIGHT-FRAMERATE-BIT-ORIENTATION-->"+DISPLAY_WIDTH+"-"+DISPLAY_HEIGHT+"-"+"-"+FRAME_RATE+"-"+BIT_RATE+"-"+ORIENTATION);
+            Log.e("InitRecorder", "Init Recorder");
+            Log.e("Media Recoder", "WIDTH-HEIGHT-FRAMERATE-BIT-ORIENTATION-->" + DISPLAY_WIDTH + "-" + DISPLAY_HEIGHT + "-" + "-" + FRAME_RATE + "-" + BIT_RATE + "-" + ORIENTATION);
             if (!outputRoot.exists() && !outputRoot.mkdirs()) {
                 //Timber.e("Unable to create output directory '%s'.", outputRoot.getAbsolutePath());
                 Toast.makeText(getApplicationContext(), "Unable to create output directory.\nCannot record screen.",
@@ -760,11 +722,11 @@ public class ChatHeadService extends Service implements ShakeDetector.Listener{
             String outputName = fileFormat.format(new Date());
             String videoPath = new File(outputRoot, outputName).getAbsolutePath();//outputRoot.getAbsolutePath() +"/VID_"+filename +".mp4";
             //getRecordingInfo();
-            int resolutionId = Integer.parseInt(mConfig.getResolution()) -1;
+            int resolutionId = Integer.parseInt(mConfig.getResolution()) - 1;
 
             mMediaRecorder = new MediaRecorder();
 
-            if(mConfig.isEnableRecordAudio()) {
+            if (mConfig.isEnableRecordAudio()) {
                 mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
                 mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.DEFAULT);
                 mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
@@ -772,10 +734,10 @@ public class ChatHeadService extends Service implements ShakeDetector.Listener{
 
                 mMediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
                 mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
-                mMediaRecorder.setAudioEncodingBitRate(96*1024);
+                mMediaRecorder.setAudioEncodingBitRate(96 * 1024);
                 mMediaRecorder.setAudioChannels(2);
                 mMediaRecorder.setAudioSamplingRate(44100);
-            }else{
+            } else {
                 mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
                 mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
                 mMediaRecorder.setVideoFrameRate(FRAME_RATE);
@@ -790,33 +752,33 @@ public class ChatHeadService extends Service implements ShakeDetector.Listener{
                 mMediaRecorder.setVideoSize(DISPLAY_WIDTH, DISPLAY_HEIGHT);
             }else{
             */
-                if(ORIENTATION == Configuration.ORIENTATION_UNDEFINED){
-                    Configuration configuration = this.getResources().getConfiguration();
-                    int orientation = configuration.orientation;
-                    if(orientation == Configuration.ORIENTATION_LANDSCAPE){
-                        int temp = DISPLAY_HEIGHT;
-                        DISPLAY_HEIGHT = DISPLAY_WIDTH;
-                        DISPLAY_WIDTH = temp;
-                        mMediaRecorder.setVideoSize( DISPLAY_WIDTH,DISPLAY_HEIGHT);
-                    }else{
-                        mMediaRecorder.setVideoSize(DISPLAY_WIDTH, DISPLAY_HEIGHT);
-                    }
-                }else if(ORIENTATION == Configuration.ORIENTATION_LANDSCAPE) {
+            if (ORIENTATION == Configuration.ORIENTATION_UNDEFINED) {
+                Configuration configuration = this.getResources().getConfiguration();
+                int orientation = configuration.orientation;
+                if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
                     int temp = DISPLAY_HEIGHT;
                     DISPLAY_HEIGHT = DISPLAY_WIDTH;
                     DISPLAY_WIDTH = temp;
-                    mMediaRecorder.setVideoSize( DISPLAY_WIDTH,DISPLAY_HEIGHT);
-                }else if(ORIENTATION == Configuration.ORIENTATION_PORTRAIT){
+                    mMediaRecorder.setVideoSize(DISPLAY_WIDTH, DISPLAY_HEIGHT);
+                } else {
                     mMediaRecorder.setVideoSize(DISPLAY_WIDTH, DISPLAY_HEIGHT);
                 }
-           // }
+            } else if (ORIENTATION == Configuration.ORIENTATION_LANDSCAPE) {
+                int temp = DISPLAY_HEIGHT;
+                DISPLAY_HEIGHT = DISPLAY_WIDTH;
+                DISPLAY_WIDTH = temp;
+                mMediaRecorder.setVideoSize(DISPLAY_WIDTH, DISPLAY_HEIGHT);
+            } else if (ORIENTATION == Configuration.ORIENTATION_PORTRAIT) {
+                mMediaRecorder.setVideoSize(DISPLAY_WIDTH, DISPLAY_HEIGHT);
+            }
+            // }
             mMediaRecorder.setVideoEncodingBitRate(BIT_RATE);
 
             mMediaRecorder.setOutputFile(videoPath);
 
             int rotation = windowManager.getDefaultDisplay().getRotation();
             int orientation = ORIENTATIONS.get(rotation + 90);
-           // Log.e("ORIENTATION AUTO ","ORIENTATION AUTO = "+orientation);
+            // Log.e("ORIENTATION AUTO ","ORIENTATION AUTO = "+orientation);
             mMediaRecorder.setOrientationHint(orientation);
 
             mMediaRecorder.prepare();
@@ -826,11 +788,9 @@ public class ChatHeadService extends Service implements ShakeDetector.Listener{
             mMediaRecorder.reset();
             mMediaRecorder.release();
             mMediaRecorder = null;
-            Log.e("Init Media recorder","Fail prepare");
+            Log.e("Init Media recorder", "Fail prepare");
             e.printStackTrace();
         }
-
-
 
 
     }
@@ -838,85 +798,88 @@ public class ChatHeadService extends Service implements ShakeDetector.Listener{
     private VirtualDisplay createVirtualDisplay() {
 
         Surface surface = mMediaRecorder.getSurface();
-        if(surface != null) {
+        if (surface != null) {
             return mMediaProjection.createVirtualDisplay("Project",
                     DISPLAY_WIDTH, DISPLAY_HEIGHT, mScreenDensity,
                     DisplayManager.VIRTUAL_DISPLAY_FLAG_PRESENTATION,
-                    surface, null , null
-                );
-        }else {
-            Toast.makeText(this,"Cannot create video encoder. Please reduce Resolution or Frame Rate Or Both",Toast.LENGTH_SHORT).show();
+                    surface, null, null
+            );
+        } else {
+            Toast.makeText(this, "Cannot create video encoder. Please reduce Resolution or Frame Rate Or Both", Toast.LENGTH_SHORT).show();
             return null;
         }
 
 
     }
+
     private void shareScreen() {
-        if(mMediaProjection == null){
-            Intent intent = new Intent(ChatHeadService.this,Project.class);
+        if (mMediaProjection == null) {
+            Intent intent = new Intent(ChatHeadService.this, Project.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
             return;
         }
         initRecorder();
-        if(isPrepareRecorderSuccess){
+        if (isPrepareRecorderSuccess) {
             mVirtualDisplay = createVirtualDisplay();
-            if(mVirtualDisplay != null)
+            if (mVirtualDisplay != null)
                 mMediaRecorder.start();
             else {
-                Toast.makeText(this,"Cannot create video encoder. Please reduce Resolution or Frame Rate Or Both",Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Cannot create video encoder. Please reduce Resolution or Frame Rate Or Both", Toast.LENGTH_SHORT).show();
             }
-        }else{
-            Toast.makeText(this,"Cannot create video encoder. Please reduce Resolution or Frame Rate Or Both",Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, "Cannot create video encoder. Please reduce Resolution or Frame Rate Or Both", Toast.LENGTH_SHORT).show();
         }
     }
 
     public void onToggleScreenShare() {
-            isInScreenRecoder = true;
-            mMagicButtonView.setVisibility(View.VISIBLE);
-            //initRecorder();
-            shareScreen();
+        isInScreenRecoder = true;
+        mMagicButtonView.setVisibility(View.VISIBLE);
+        //initRecorder();
+        shareScreen();
 
     }
-    private void stopProjection(){
-        Log.e("StopProjection","StopProjecttion");
-         if(mMediaRecorder != null) {
-             popupView.setVisibility(View.VISIBLE);
-             try {
-             stopScreenSharing();
-             mMediaRecorder.stop();
-             mMediaRecorder.reset();
-                 mMediaRecorder.release();
-                 mMediaRecorder = null;
-             }catch (RuntimeException e){
 
-             }
+    private void stopProjection() {
+        Log.e("StopProjection", "StopProjecttion");
+        if (mMediaRecorder != null) {
+            popupView.setVisibility(View.VISIBLE);
+            try {
+                stopScreenSharing();
+                mMediaRecorder.stop();
+                mMediaRecorder.reset();
+                mMediaRecorder.release();
+                mMediaRecorder = null;
+            } catch (RuntimeException e) {
+
+            }
             // mMediaRecorder.release();
             // mMediaRecorder.release();
-             //mMediaRecorder = null;
+            //mMediaRecorder = null;
 
-         }
+        }
 
     }
-    private void stopCamera(){
-        Log.e("ChatHeadService","stopCamera");
+
+    private void stopCamera() {
+        Log.e("ChatHeadService", "stopCamera");
         if (inPreview) {
             camera.stopPreview();
         }
-        if(null != camera){
+        if (null != camera) {
             camera.release();
-            camera=null;
-            inPreview=false;
+            camera = null;
+            inPreview = false;
         }
 
-        if(preview != null && preview.getVisibility() == View.VISIBLE){
+        if (preview != null && preview.getVisibility() == View.VISIBLE && preview.isAttachedToWindow()) {
             windowManager.removeView(preview);
 
         }
     }
 
-    private void initShowTouches(){
-        if(mConfig.isEnableShowTouches()) {
+    private void initShowTouches() {
+        if (mConfig.isEnableShowTouches()) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 if (Settings.System.canWrite(this)) {
                     // Do stuff here
@@ -942,60 +905,59 @@ public class ChatHeadService extends Service implements ShakeDetector.Listener{
 
         }
     }
-    private void stopShowTouches(){
+
+    private void stopShowTouches() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (Settings.System.canWrite(this)) {
                 // Do stuff here
                 try {
                     Settings.System.putInt(this.getContentResolver(),
                             "show_touches", 0);
-                }catch (IllegalArgumentException e){
+                } catch (IllegalArgumentException e) {
 
                 }
-            }
-            else {
+            } else {
                 Intent intent = new Intent(android.provider.Settings.ACTION_MANAGE_WRITE_SETTINGS);
                 intent.setData(Uri.parse("package:" + this.getPackageName()));
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
             }
-        }
-
-        else{
+        } else {
             try {
-            Settings.System.putInt(this.getContentResolver(),
-                    "show_touches", 0);
-            }catch (IllegalArgumentException  e){}
+                Settings.System.putInt(this.getContentResolver(),
+                        "show_touches", 0);
+            } catch (IllegalArgumentException e) {
+            }
         }
 
     }
 
-    private void updateConfig(){
+    private void updateConfig() {
         Config newConfig = MyPreference.getInstance(this).getConfig();
-        Log.e("NewConfig",newConfig.toString());
+        Log.e("NewConfig", newConfig.toString());
         mConfig = newConfig;
-        if(newConfig.isEnableShowCamera()){
+        if (newConfig.isEnableShowCamera()) {
             initCamera();
             preview.setVisibility(View.VISIBLE);
-        }
-        else {
+        } else {
             preview.setVisibility(View.GONE);
             stopCamera();
         }
-        if(newConfig.isEnableShowTouches()){
+        if (newConfig.isEnableShowTouches()) {
             initShowTouches();
-        }else{
+        } else {
             stopShowTouches();
         }
         updateProjectorConfig(newConfig);
     }
-    private void updateProjectorConfig(Config newConfig){
+
+    private void updateProjectorConfig(Config newConfig) {
         //stopProjection();
-        int resolutionId = Integer.parseInt(newConfig.getResolution()) -1;
-        int frameRateId = Integer.parseInt(newConfig.getFrameRate()) -1;
-        int bitRateId = Integer.parseInt(newConfig.getBitRate())-1;
-        int orientationId = Integer.parseInt(newConfig.getOrientation())-1;
-        int countDownId = Integer.parseInt(newConfig.getCountDownValue())-1;
+        int resolutionId = Integer.parseInt(newConfig.getResolution()) - 1;
+        int frameRateId = Integer.parseInt(newConfig.getFrameRate()) - 1;
+        int bitRateId = Integer.parseInt(newConfig.getBitRate()) - 1;
+        int orientationId = Integer.parseInt(newConfig.getOrientation()) - 1;
+        int countDownId = Integer.parseInt(newConfig.getCountDownValue()) - 1;
 
         //Init all variable here
         //For best solution
@@ -1007,19 +969,19 @@ public class ChatHeadService extends Service implements ShakeDetector.Listener{
             DISPLAY_HEIGHT = recordingInfo.height;
         }else{
         */
-            DISPLAY_WIDTH = Constant.RESOLUTION_WIDTH[resolutionId];
-            DISPLAY_HEIGHT = Constant.RESOLUTION_HEIGHT[resolutionId];
+        DISPLAY_WIDTH = Constant.RESOLUTION_WIDTH[resolutionId];
+        DISPLAY_HEIGHT = Constant.RESOLUTION_HEIGHT[resolutionId];
         //}
 
         FRAME_RATE = Constant.FRAME_RATE[frameRateId];
-        if(bitRateId != 0)
+        if (bitRateId != 0)
             BIT_RATE = Constant.BIT_RATE[bitRateId];
         else
-            BIT_RATE = Constant.getBitRateAuto(DISPLAY_WIDTH,DISPLAY_HEIGHT);
+            BIT_RATE = Constant.getBitRateAuto(DISPLAY_WIDTH, DISPLAY_HEIGHT);
 
         int rotation = windowManager.getDefaultDisplay().getRotation();
         int degree = ORIENTATIONS.get(rotation);
-        Log.e("orientationID ","Orientation ID = "+orientationId);
+        Log.e("orientationID ", "Orientation ID = " + orientationId);
 
         ORIENTATION = Constant.ORIENTATION[orientationId];
 
@@ -1027,38 +989,39 @@ public class ChatHeadService extends Service implements ShakeDetector.Listener{
 
 
     }
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.e("ChatHeadService","onStartCommand");
-        if(intent != null){
+        Log.e("ChatHeadService", "onStartCommand");
+        if (intent != null) {
             String extra = intent.getStringExtra(Constant.COMMAND);
-            if(extra != null) {
+            if (extra != null) {
                 if (extra.equalsIgnoreCase(Constant.CMD_START_RECORD)) {
                     initRecorder();
-                    if(isPrepareRecorderSuccess){
+                    if (isPrepareRecorderSuccess) {
                         int resultCode = intent.getIntExtra(EXTRA_RESULT_CODE, 0);
                         Intent data = intent.getParcelableExtra(EXTRA_DATA);
-                        mMediaProjection = mProjectionManager.getMediaProjection(resultCode,data);
+                        mMediaProjection = mProjectionManager.getMediaProjection(resultCode, data);
                         popupView.setVisibility(View.GONE);
                         mMediaProjectionCallback = new MediaProjectionCallback();
                         mMediaProjection.registerCallback(mMediaProjectionCallback, null);
                         mVirtualDisplay = createVirtualDisplay();
-                        if(mVirtualDisplay != null)
+                        if (mVirtualDisplay != null)
                             mMediaRecorder.start();
                         mMagicButtonView.setVisibility(View.VISIBLE);
-                       // mMagicButtonView.setAlpha((float)0.2);
-                       // mMagicButtonView.startAnimation(createAnimation());
+                        // mMagicButtonView.setAlpha((float)0.2);
+                        // mMagicButtonView.startAnimation(createAnimation());
                         AnimationDrawable frameAnimation = (AnimationDrawable) mMagicButtonView.getDrawable();
                         frameAnimation.start();
-                    }else{
+                    } else {
 
 
-                        Toast.makeText(this,"Cannot create video encoder. Please reduce Resolution or Frame Rate Or Both",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "Cannot create video encoder. Please reduce Resolution or Frame Rate Or Both", Toast.LENGTH_SHORT).show();
                     }
 
-                   // startShake();
-                }else if(extra.equalsIgnoreCase(Constant.CMD_UPDATE_CONFIG)){
-                    Log.e("ChatHeadService","UPDATE CONFIG");
+                    // startShake();
+                } else if (extra.equalsIgnoreCase(Constant.CMD_UPDATE_CONFIG)) {
+                    Log.e("ChatHeadService", "UPDATE CONFIG");
                     popupView.setVisibility(View.VISIBLE);
                     mMagicButtonView.setVisibility(View.GONE);
                     updateConfig();
@@ -1070,7 +1033,7 @@ public class ChatHeadService extends Service implements ShakeDetector.Listener{
     }
 
     private int findFrontFacingCamera() {
-        int idCamera=0;
+        int idCamera = 0;
         // Look for front-facing camera, using the Gingerbread API.
         // Java reflection is used for backwards compatibility with pre-Gingerbread APIs.
         try {
@@ -1078,29 +1041,29 @@ public class ChatHeadService extends Service implements ShakeDetector.Listener{
             Object cameraInfo = null;
             Field field = null;
             int cameraCount = 0;
-            Method getNumberOfCamerasMethod = cameraClass.getMethod( "getNumberOfCameras" );
-            if ( getNumberOfCamerasMethod != null ) {
-                cameraCount = (Integer) getNumberOfCamerasMethod.invoke( null, (Object[]) null );
+            Method getNumberOfCamerasMethod = cameraClass.getMethod("getNumberOfCameras");
+            if (getNumberOfCamerasMethod != null) {
+                cameraCount = (Integer) getNumberOfCamerasMethod.invoke(null, (Object[]) null);
             }
             Class<?> cameraInfoClass = Class.forName("android.hardware.Camera$CameraInfo");
-            if ( cameraInfoClass != null ) {
+            if (cameraInfoClass != null) {
                 cameraInfo = cameraInfoClass.newInstance();
             }
-            if ( cameraInfo != null ) {
-                field = cameraInfo.getClass().getField( "facing" );
+            if (cameraInfo != null) {
+                field = cameraInfo.getClass().getField("facing");
             }
-            Method getCameraInfoMethod = cameraClass.getMethod( "getCameraInfo", Integer.TYPE, cameraInfoClass );
-            if ( getCameraInfoMethod != null && cameraInfoClass != null && field != null ) {
-                for ( int camIdx = 0; camIdx < cameraCount; camIdx++ ) {
-                    getCameraInfoMethod.invoke( null, camIdx, cameraInfo );
-                    int facing = field.getInt( cameraInfo );
-                    if ( facing == 1 ) { // Camera.CameraInfo.CAMERA_FACING_FRONT
+            Method getCameraInfoMethod = cameraClass.getMethod("getCameraInfo", Integer.TYPE, cameraInfoClass);
+            if (getCameraInfoMethod != null && cameraInfoClass != null && field != null) {
+                for (int camIdx = 0; camIdx < cameraCount; camIdx++) {
+                    getCameraInfoMethod.invoke(null, camIdx, cameraInfo);
+                    int facing = field.getInt(cameraInfo);
+                    if (facing == 1) { // Camera.CameraInfo.CAMERA_FACING_FRONT
                         try {
-                            Method cameraOpenMethod = cameraClass.getMethod( "open", Integer.TYPE );
-                            if ( cameraOpenMethod != null ) {
-                                Log.d("TestLedActivity","Id frontale trovato: "+camIdx);
+                            Method cameraOpenMethod = cameraClass.getMethod("open", Integer.TYPE);
+                            if (cameraOpenMethod != null) {
+                                Log.d("TestLedActivity", "Id frontale trovato: " + camIdx);
                                 //camera = (Camera) cameraOpenMethod.invoke( null, camIdx );
-                                idCamera=camIdx;
+                                idCamera = camIdx;
                             }
                         } catch (RuntimeException e) {
                             Log.e("TestLedActivity", "Camera failed to open: " + e.getLocalizedMessage());
@@ -1110,18 +1073,26 @@ public class ChatHeadService extends Service implements ShakeDetector.Listener{
             }
         }
         // Ignore the bevy of checked exceptions the Java Reflection API throws - if it fails, who cares.
-        catch ( ClassNotFoundException e        ) {Log.e("TestLedActivity", "ClassNotFoundException" + e.getLocalizedMessage());}
-        catch ( NoSuchMethodException e         ) {Log.e("TestLedActivity", "NoSuchMethodException" + e.getLocalizedMessage());}
-        catch ( NoSuchFieldException e          ) {Log.e("TestLedActivity", "NoSuchFieldException" + e.getLocalizedMessage());}
-        catch ( IllegalAccessException e        ) {Log.e("TestLedActivity", "IllegalAccessException" + e.getLocalizedMessage());}
-        catch ( InvocationTargetException e     ) {Log.e("TestLedActivity", "InvocationTargetException" + e.getLocalizedMessage());}
-        catch ( InstantiationException e        ) {Log.e("TestLedActivity", "InstantiationException" + e.getLocalizedMessage());}
-        catch ( SecurityException e             ) {Log.e("TestLedActivity", "SecurityException" + e.getLocalizedMessage());}
+        catch (ClassNotFoundException e) {
+            Log.e("TestLedActivity", "ClassNotFoundException" + e.getLocalizedMessage());
+        } catch (NoSuchMethodException e) {
+            Log.e("TestLedActivity", "NoSuchMethodException" + e.getLocalizedMessage());
+        } catch (NoSuchFieldException e) {
+            Log.e("TestLedActivity", "NoSuchFieldException" + e.getLocalizedMessage());
+        } catch (IllegalAccessException e) {
+            Log.e("TestLedActivity", "IllegalAccessException" + e.getLocalizedMessage());
+        } catch (InvocationTargetException e) {
+            Log.e("TestLedActivity", "InvocationTargetException" + e.getLocalizedMessage());
+        } catch (InstantiationException e) {
+            Log.e("TestLedActivity", "InstantiationException" + e.getLocalizedMessage());
+        } catch (SecurityException e) {
+            Log.e("TestLedActivity", "SecurityException" + e.getLocalizedMessage());
+        }
 
-        if ( camera == null ) {
-            Log.d("TestLedActivity","Devo aprire la camera dietro");
+        if (camera == null) {
+            Log.d("TestLedActivity", "Devo aprire la camera dietro");
             // Try using the pre-Gingerbread APIs to open the camera.
-            idCamera=0;
+            idCamera = 0;
         }
 
         return idCamera;
@@ -1129,35 +1100,33 @@ public class ChatHeadService extends Service implements ShakeDetector.Listener{
 
     private Camera.Size getBestPreviewSize(int width, int height,
                                            Camera.Parameters parameters) {
-        Camera.Size result=null;
+        Camera.Size result = null;
 
         for (Camera.Size size : parameters.getSupportedPreviewSizes()) {
-            Log.e("getBestPreviewSize","W-H"+size.width+"-"+size.height);
-            if (size.width<=width && size.height<=height) {
-                if (result==null) {
-                    result=size;
-                }
-                else {
-                    int resultArea=result.width*result.height;
-                    int newArea=size.width*size.height;
+            Log.e("getBestPreviewSize", "W-H" + size.width + "-" + size.height);
+            if (size.width <= width && size.height <= height) {
+                if (result == null) {
+                    result = size;
+                } else {
+                    int resultArea = result.width * result.height;
+                    int newArea = size.width * size.height;
 
-                    if (newArea>resultArea) {
-                        result=size;
+                    if (newArea > resultArea) {
+                        result = size;
                     }
                 }
             }
         }
 
-        return(result);
+        return (result);
     }
 
-    SurfaceHolder.Callback surfaceCallback=new SurfaceHolder.Callback() {
+    SurfaceHolder.Callback surfaceCallback = new SurfaceHolder.Callback() {
         public void surfaceCreated(SurfaceHolder holder) {
             try {
-                Log.e("Camera","setPreviewHolder");
+                Log.e("Camera", "setPreviewHolder");
                 camera.setPreviewDisplay(previewHolder);
-            }
-            catch (Throwable t) {
+            } catch (Throwable t) {
             }
         }
 
@@ -1165,43 +1134,39 @@ public class ChatHeadService extends Service implements ShakeDetector.Listener{
         public void surfaceChanged(SurfaceHolder holder,
                                    int format, int width,
                                    int height) {
-            Log.e("Camera","Surface change");
-            Camera.Parameters parameters=camera.getParameters();
-            Camera.Size size=getBestPreviewSize(width, height,
+            Log.e("Camera", "Surface change");
+            Camera.Parameters parameters = camera.getParameters();
+            Camera.Size size = getBestPreviewSize(width, height,
                     parameters);
 
-            if (size!=null) {
-                Log.e("Came W-H = ",""+size.width+"-"+size.height);
+            if (size != null) {
+                Log.e("Came W-H = ", "" + size.width + "-" + size.height);
                 //parameters.set("camera-id", 0);
 
-                Display display = ((WindowManager)getSystemService(WINDOW_SERVICE)).getDefaultDisplay();
-                if(display.getRotation() == Surface.ROTATION_0)
-                {
-                   // parameters.setPreviewSize(size.height, size.width);
+                Display display = ((WindowManager) getSystemService(WINDOW_SERVICE)).getDefaultDisplay();
+                if (display.getRotation() == Surface.ROTATION_0) {
+                    // parameters.setPreviewSize(size.height, size.width);
                     camera.setDisplayOrientation(90);
                 }
 
-                if(display.getRotation() == Surface.ROTATION_90)
-                {
+                if (display.getRotation() == Surface.ROTATION_90) {
                     parameters.setPreviewSize(size.width, size.height);
                 }
 
-                if(display.getRotation() == Surface.ROTATION_180)
-                {
-                   // parameters.setPreviewSize(size.height, size.width);
+                if (display.getRotation() == Surface.ROTATION_180) {
+                    // parameters.setPreviewSize(size.height, size.width);
                     camera.setDisplayOrientation(270);
                 }
 
-                if(display.getRotation() == Surface.ROTATION_270)
-                {
-                   // parameters.setPreviewSize(size.width, size.height);
+                if (display.getRotation() == Surface.ROTATION_270) {
+                    // parameters.setPreviewSize(size.width, size.height);
                     camera.setDisplayOrientation(180);
                 }
 
                 parameters.setPreviewSize(size.width, size.height);
                 camera.setParameters(parameters);
                 camera.startPreview();
-                inPreview=true;
+                inPreview = true;
             }
         }
 
@@ -1217,8 +1182,7 @@ public class ChatHeadService extends Service implements ShakeDetector.Listener{
             if (cameraInfo.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
                 try {
                     return Camera.open(cameraIndex);
-                }
-                catch (RuntimeException e) {
+                } catch (RuntimeException e) {
                     e.printStackTrace();
                 }
             }
@@ -1252,28 +1216,29 @@ public class ChatHeadService extends Service implements ShakeDetector.Listener{
 
     }
 
-    private void getCameraApi23(){
+    private void getCameraApi23() {
         if (!getPackageManager()
                 .hasSystemFeature(PackageManager.FEATURE_CAMERA)) {
             Toast.makeText(this, "No camera on this device", Toast.LENGTH_LONG)
                     .show();
-            Log.e("getCameraApi23","No camera on this device" +
+            Log.e("getCameraApi23", "No camera on this device" +
                     "");
         }
         CameraManager manager = (CameraManager) this.getSystemService(Context.CAMERA_SERVICE);
         try {
-            Log.e("getCameraApi23","AAA");
+            Log.e("getCameraApi23", "AAA");
             String[] camlist = manager.getCameraIdList();
-            Log.e("getCameraApi23 LENGTH =",""+camlist.length);
+            Log.e("getCameraApi23 LENGTH =", "" + camlist.length);
 
-           for(String camId:manager.getCameraIdList()){
-               Log.e("API23 Came ID =  ",camId);
-           }
+            for (String camId : manager.getCameraIdList()) {
+                Log.e("API23 Came ID =  ", camId);
+            }
 
         } catch (CameraAccessException e) {
             e.printStackTrace();
         }
     }
+
     private RecordingInfo getRecordingInfo() {
         DisplayMetrics displayMetrics = new DisplayMetrics();
         WindowManager wm = (WindowManager) this.getSystemService(WINDOW_SERVICE);
@@ -1281,7 +1246,7 @@ public class ChatHeadService extends Service implements ShakeDetector.Listener{
         int displayWidth = displayMetrics.widthPixels;
         int displayHeight = displayMetrics.heightPixels;
         int displayDensity = displayMetrics.densityDpi;
-        Log.e("Get Recording infor = ","w - h =  "+displayWidth+"-"+displayHeight);
+        Log.e("Get Recording infor = ", "w - h =  " + displayWidth + "-" + displayHeight);
         //Timber.d("Display size: %s x %s @ %s", displayWidth, displayHeight, displayDensity);
 
         Configuration configuration = this.getResources().getConfiguration();
@@ -1301,6 +1266,7 @@ public class ChatHeadService extends Service implements ShakeDetector.Listener{
         return calculateRecordingInfo(displayWidth, displayHeight, displayDensity, isLandscape,
                 cameraWidth, cameraHeight, cameraFrameRate, sizePercentage);
     }
+
     static RecordingInfo calculateRecordingInfo(int displayWidth, int displayHeight,
                                                 int displayDensity, boolean isLandscapeDevice, int cameraWidth, int cameraHeight,
                                                 int cameraFrameRate, int sizePercentage) {
@@ -1342,7 +1308,6 @@ public class ChatHeadService extends Service implements ShakeDetector.Listener{
             this.density = density;
         }
     }
-
 
 
 }
